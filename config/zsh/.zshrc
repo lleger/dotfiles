@@ -15,11 +15,6 @@ compinit -d "$XDG_CACHE_HOME/zsh/.zcompdump"
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 mkdir -p "${HISTFILE:h}"
 
-# Enable worktrunk shell hooks only when installed.
-if command -v wt >/dev/null 2>&1; then
-  eval "$(command wt config shell init zsh)"
-fi
-
 # Load interactive aliases.
 [[ -f "$ZDOTDIR/aliases.zsh" ]] && source "$ZDOTDIR/aliases.zsh"
 
@@ -28,6 +23,9 @@ fi
 
 # Load Nushell helpers.
 [[ -f "$ZDOTDIR/nushell.zsh" ]] && source "$ZDOTDIR/nushell.zsh"
+
+# Load Worktrunk shell integration.
+[[ -f "$ZDOTDIR/worktrunk.zsh" ]] && source "$ZDOTDIR/worktrunk.zsh"
 
 # Load Atuin history integration before prompt-highlighting plugins.
 [[ -f "$ZDOTDIR/atuin.zsh" ]] && source "$ZDOTDIR/atuin.zsh"
