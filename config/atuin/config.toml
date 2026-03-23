@@ -1,0 +1,11 @@
+[keymap.emacs]
+"ctrl-o" = "noop"
+"ctrl-i" = "toggle-tab"
+
+[keymap.vim-normal]
+"ctrl-o" = "noop"
+"ctrl-i" = "toggle-tab"
+
+[keymap.inspector]
+"ctrl-o" = "noop"
+"ctrl-i" = "toggle-tab"

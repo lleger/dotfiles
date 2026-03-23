@@ -1,0 +1,16 @@
+// Use zsh explicitly for new panes so interactive shell startup reliably loads
+// the same rc chain as your normal terminal sessions.
+default_shell "/bin/zsh"
+
+// Use Zellij's built-in Tokyo Night theme.
+theme "tokyo-night"
+
+// Skip introductory UI noise once the basics are known.
+show_startup_tips false
+show_release_notes false
+
+// Keep enough session state to reopen recent work after a restart.
+session_serialization true
+
+// Open scrollback in Neovim.
+scrollback_editor "/opt/homebrew/bin/nvim"

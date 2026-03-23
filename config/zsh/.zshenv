@@ -1,0 +1,10 @@
+# Child zsh processes inherit ZDOTDIR from the parent shell, so they read this
+# file instead of ~/.zshenv. Keep the core environment bootstrap in sync here.
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+export EDITOR="${EDITOR:-/opt/homebrew/bin/nvim}"
+export VISUAL="${VISUAL:-$EDITOR}"
+export PSQLRC="${PSQLRC:-$XDG_CONFIG_HOME/psql/psqlrc}"
+export ZELLIJ_CONFIG_DIR="${ZELLIJ_CONFIG_DIR:-$XDG_CONFIG_HOME/zellij}"
+export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}"

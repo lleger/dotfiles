@@ -1,21 +1,64 @@
 [user]
 	name = Logan Leger
-	email = logan@loganleger.com
-[github]
-	user = lleger
-[push]
-	default = current
-[color]
+	email = logan@hiive.com
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF9ZKwLYzM7gs0CasiGxWAtJwma/MsVxoUoJ8kBGQv8Y
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+	allowedSignersFile = /Users/logan/.ssh/allowed_signers
+[commit]
+	gpgsign = true
+
+# https://blog.gitbutler.com/how-git-core-devs-configure-git
+[column]
 	ui = auto
-[core]
-	excludesfile = /Users/loganleger/.gitignore
-	editor = vim
-	whitespace = warn
-[merge]
-	ff = only
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
+[init]
+	defaultBranch = main
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
+[push]
+	default = simple
+	autoSetupRemote = true
 [fetch]
 	prune = true
-[rebase]
-	autosquash = true
+	pruneTags = true
+	all = true
+[help]
+	autocorrect = prompt
 [commit]
 	verbose = true
+[core]
+	excludesfile = ~/.gitignore
+	editor = /opt/homebrew/bin/nvim
+[rerere]
+	enabled = true
+	autoupdate = true
+[rebase]
+	autoSquash = true
+	autoStash = true
+	updateRefs = true
+[core]
+	fsmonitor = true
+	untrackedCache = true
+[merge]
+	conflictstyle = zdiff3
+[pull]
+	rebase = true
+
+# Personal projects
+[includeIf "gitdir:~/code/"]
+	path = ~/code/.gitconfig
