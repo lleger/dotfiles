@@ -15,18 +15,6 @@ compinit -d "$XDG_CACHE_HOME/zsh/.zcompdump"
 HISTFILE="$XDG_STATE_HOME/zsh/history"
 mkdir -p "${HISTFILE:h}"
 
-# Safe-chain Zsh initialization script
-[[ -f "$HOME/.safe-chain/scripts/init-posix.sh" ]] && source "$HOME/.safe-chain/scripts/init-posix.sh"
-
-# Older Hiive prompt/home-hook scripts exported their "loaded" sentinels, which
-# causes child shells to skip initialization. Clear inherited values before
-# sourcing the managed Hiive init script.
-unset _HIIVE_PROMPT_LOADED _HIIVE_HOME_HOOK_LOADED
-
-# >>> hiive initialize (v1) >>>
-[[ -f "$HOME/.config/hiive/init.zsh" ]] && source "$HOME/.config/hiive/init.zsh"
-# <<< hiive initialize (v1) <<<
-
 # Enable worktrunk shell hooks only when installed.
 if command -v wt >/dev/null 2>&1; then
   eval "$(command wt config shell init zsh)"
