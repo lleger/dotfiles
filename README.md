@@ -70,7 +70,6 @@ exec zsh
   compatibility shim.
 - The shell config assumes some optional tools may be absent and guards those
   integrations accordingly.
-- Some machine-specific integrations are intentionally not managed here, such as
-  `~/.config/hiive` and `~/.safe-chain`.
+- Some machine-specific integrations are intentionally not managed here.
 - Review `dotfiles/gitconfig` before applying it on a different machine or
   account, because it includes signing and credential configuration.
