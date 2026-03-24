@@ -31,6 +31,7 @@ The `Brewfile` contains the core CLI tools this setup expects:
 - `atuin`
 - `bat`
 - `eza`
+- `fzf`
 - `gh`
 - `git`
 - `jq`
@@ -73,3 +74,4 @@ exec zsh
 - Some machine-specific integrations are intentionally not managed here.
 - Review `dotfiles/gitconfig` before applying it on a different machine or
   account, because it includes signing and credential configuration.
+- `wt` is a small local Git worktree helper installed to `~/.local/bin/wt`.
