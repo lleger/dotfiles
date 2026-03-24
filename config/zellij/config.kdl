@@ -14,3 +14,8 @@ session_serialization true
 
 // Open scrollback in Neovim.
 scrollback_editor "/opt/homebrew/bin/nvim"
+
+keybinds {
+    // Let shells keep Meta-f / Option-Right for forward-word movement.
+    unbind "Alt f"
+}
