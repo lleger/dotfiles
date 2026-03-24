@@ -18,4 +18,7 @@ scrollback_editor "/opt/homebrew/bin/nvim"
 keybinds {
     // Let shells keep Meta-f / Option-Right for forward-word movement.
     unbind "Alt f"
+    shared_except "locked" {
+        bind "Alt Shift f" { ToggleFloatingPanes; }
+    }
 }
