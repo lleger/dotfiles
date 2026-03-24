@@ -24,9 +24,6 @@ mkdir -p "${HISTFILE:h}"
 # Load Nushell helpers.
 [[ -f "$ZDOTDIR/nushell.zsh" ]] && source "$ZDOTDIR/nushell.zsh"
 
-# Load Worktrunk shell integration.
-[[ -f "$ZDOTDIR/worktrunk.zsh" ]] && source "$ZDOTDIR/worktrunk.zsh"
-
 # Load Atuin history integration before prompt-highlighting plugins.
 [[ -f "$ZDOTDIR/atuin.zsh" ]] && source "$ZDOTDIR/atuin.zsh"
 
