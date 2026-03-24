@@ -58,6 +58,14 @@
 	conflictstyle = zdiff3
 [pull]
 	rebase = true
+[alias]
+	st = status -sb
+	up = pull --rebase --autostash
+	sw = "!f() { query=${1-}; branch=$(git for-each-ref --sort=-committerdate --format='%(refname:short)' refs/heads | fzf --prompt='branch> ' --query=\"$query\" --preview='git --no-pager log --color=always --oneline --decorate --max-count=20 {}'); [ -n \"$branch\" ] && git switch \"$branch\"; }; f"
+	main = switch main
+	lg = log --oneline --decorate
+	last = log -1 --stat
+	undo = restore --staged
 
 # Personal projects
 [includeIf "gitdir:~/code/"]
