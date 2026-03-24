@@ -79,8 +79,8 @@ Then restart the shell:
 exec zsh
 ```
 
-On a fresh machine, open Neovim once after install so `lazy.nvim` can install
-the managed plugins:
+On a fresh machine, open Neovim once after install so LazyVim can install the
+managed plugins:
 
 ```sh
 nvim
@@ -130,24 +130,30 @@ Existing worktrees created by other tools still show up in `wt list` and
 
 ## Neovim
 
-The managed Neovim config is a small `lazy.nvim` setup under
+The managed Neovim config is the official LazyVim starter layout under
 `~/.config/nvim`.
 
-Current first-pass plugins:
+This means:
 
-- `folke/tokyonight.nvim`
-- `nvim-telescope/telescope.nvim`
-- `nvim-treesitter/nvim-treesitter`
-- `neovim/nvim-lspconfig`
-- `lewis6991/gitsigns.nvim`
+- LazyVim provides the core editing experience and plugin defaults
+- `lazy.nvim` is still the underlying plugin manager
+- the repo keeps a committed `lazy-lock.json` for plugin version stability
 
-The config includes:
+This first pass is intentionally close to the starter:
 
-- baseline editing options and split/navigation keymaps
-- Telescope pickers on `<leader>ff`, `<leader>fg`, `<leader>fb`, and `<leader>fh`
-- Treesitter highlighting for the languages you are likely to touch often
-- LSP wiring for common servers when they are installed on the machine
-- a committed `lazy-lock.json` for plugin version stability
+- no custom plugin overrides yet
+- no extra language packs yet
+- no local tweaks beyond the starter structure
+
+After the first install, a useful sanity check is:
+
+```vim
+:LazyHealth
+```
+
+Source:
+- https://www.lazyvim.org/
+- https://www.lazyvim.org/installation
 
 ## Zellij
 
