@@ -17,6 +17,7 @@ Home-directory shims:
 XDG-managed config:
 
 - `~/.config/atuin/config.toml`
+- `~/.config/nvim`
 - `~/.config/psql/psqlrc`
 - `~/.config/zellij/config.kdl`
 - `~/.config/zsh/.zshenv`
@@ -78,6 +79,13 @@ Then restart the shell:
 exec zsh
 ```
 
+On a fresh machine, open Neovim once after install so `lazy.nvim` can install
+the managed plugins:
+
+```sh
+nvim
+```
+
 ## Git
 
 The managed Git config includes a few workflow aliases:
@@ -119,6 +127,27 @@ Managed worktrees are created relative to the current repo's parent directory:
 
 Existing worktrees created by other tools still show up in `wt list` and
 `wt pick`.
+
+## Neovim
+
+The managed Neovim config is a small `lazy.nvim` setup under
+`~/.config/nvim`.
+
+Current first-pass plugins:
+
+- `folke/tokyonight.nvim`
+- `nvim-telescope/telescope.nvim`
+- `nvim-treesitter/nvim-treesitter`
+- `neovim/nvim-lspconfig`
+- `lewis6991/gitsigns.nvim`
+
+The config includes:
+
+- baseline editing options and split/navigation keymaps
+- Telescope pickers on `<leader>ff`, `<leader>fg`, `<leader>fb`, and `<leader>fh`
+- Treesitter highlighting for the languages you are likely to touch often
+- LSP wiring for common servers when they are installed on the machine
+- a committed `lazy-lock.json` for plugin version stability
 
 ## Zellij
 

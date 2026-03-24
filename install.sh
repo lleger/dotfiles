@@ -45,6 +45,7 @@ mkdir -p "$HOME/.config" "$HOME/.local/state/psql"
 mkdir -p "$HOME/.local/bin"
 
 copy_dir "config/atuin" "$HOME/.config/atuin"
+copy_dir "config/nvim" "$HOME/.config/nvim"
 copy_dir "config/psql" "$HOME/.config/psql"
 copy_dir "config/zellij" "$HOME/.config/zellij"
 copy_dir "config/zsh" "$HOME/.config/zsh"
