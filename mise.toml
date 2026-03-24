@@ -1,0 +1,3 @@
+[tasks.check]
+description = "Validate shell scripts and managed terminal config"
+run = "./scripts/check"

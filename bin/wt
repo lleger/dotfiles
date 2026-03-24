@@ -1,0 +1,305 @@
+#!/bin/sh
+set -eu
+
+die() {
+    printf '%s\n' "$*" >&2
+    exit 1
+}
+
+usage() {
+    exit_code=${1:-2}
+    cat >&2 <<'EOF'
+Usage:
+  wt list
+  wt new <name>
+  wt pick
+  wt main
+  wt rm [--force] <name>
+  wt rm [--force] --path <path>
+EOF
+    exit "$exit_code"
+}
+
+ensure_repo() {
+    git rev-parse --is-inside-work-tree >/dev/null 2>&1 || die "Not inside a Git worktree"
+}
+
+tab_char() {
+    printf '\t'
+}
+
+git_common_dir() {
+    common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || git rev-parse --git-common-dir) || exit 1
+
+    case "$common_dir" in
+        /*)
+            printf '%s\n' "$common_dir"
+            ;;
+        *)
+            cd "$common_dir" && pwd -P
+            ;;
+    esac
+}
+
+repo_root() {
+    git rev-parse --path-format=absolute --show-toplevel 2>/dev/null || git rev-parse --show-toplevel
+}
+
+repo_name() {
+    common_dir=$(git_common_dir)
+    basename "$(dirname "$common_dir")"
+}
+
+repo_parent() {
+    common_dir=$(git_common_dir)
+    dirname "$(dirname "$common_dir")"
+}
+
+managed_root() {
+    printf '%s/wt/%s\n' "$(repo_parent)" "$(repo_name)"
+}
+
+managed_path() {
+    [ $# -eq 1 ] || return 1
+    printf '%s/%s\n' "$(managed_root)" "$1"
+}
+
+worktree_records() {
+    current_root=$(repo_root)
+    tab=$(tab_char)
+    git worktree list --porcelain | awk -v current_root="$current_root" -v tab="$tab" '
+        function flush_record() {
+            if (path == "") {
+                return
+            }
+
+            current = (path == current_root) ? "*" : " "
+            primary = " "
+
+            cmd = "test -d \"" path "/.git\""
+            if (system(cmd) == 0) {
+                primary = "main"
+            }
+
+            branch_label = branch
+            if (branch_label == "") {
+                branch_label = "(detached)"
+            }
+
+            print current tab primary tab branch_label tab path
+        }
+
+        /^worktree / {
+            flush_record()
+            path = substr($0, 10)
+            branch = ""
+            next
+        }
+
+        /^branch refs\/heads\// {
+            branch = substr($0, 19)
+            next
+        }
+
+        /^branch / {
+            branch = substr($0, 8)
+            next
+        }
+
+        /^detached$/ {
+            branch = "(detached)"
+            next
+        }
+
+        /^$/ {
+            flush_record()
+            path = ""
+            branch = ""
+        }
+
+        END {
+            flush_record()
+        }
+    '
+}
+
+main_path() {
+    tab=$(tab_char)
+    worktree_records | awk -F "$tab" '$2 == "main" { print $4; found = 1; exit } END { exit found ? 0 : 1 }'
+}
+
+list_worktrees() {
+    tab=$(tab_char)
+    worktree_records | while IFS="$tab" read -r current primary branch path; do
+        label=$branch
+        if [ "$primary" = "main" ]; then
+            label="$label [main]"
+        fi
+        printf '%s %-24s %s\n' "$current" "$label" "$path"
+    done
+}
+
+pick_with_fzf() {
+    tab=$(tab_char)
+    worktree_records | fzf --delimiter="$tab" --with-nth=1,2,3 --prompt='worktree> ' | awk -F "$tab" 'NF { print $4 }'
+}
+
+pick_without_fzf() {
+    tab=$(tab_char)
+    choices_file=$(mktemp)
+    trap 'rm -f "$choices_file"' EXIT HUP INT TERM
+
+    worktree_records >"$choices_file"
+    count=$(wc -l <"$choices_file" | tr -d ' ')
+    [ "$count" -gt 0 ] || die "No worktrees found"
+
+    if [ "$count" -eq 1 ]; then
+        awk -F "$tab" 'NR == 1 { print $4 }' "$choices_file"
+        return 0
+    fi
+
+    index=1
+    while IFS="$tab" read -r current primary branch path; do
+        label=$branch
+        if [ "$primary" = "main" ]; then
+            label="$label [main]"
+        fi
+        printf '%s. %s %s\n' "$index" "$label" "$path" >&2
+        index=$((index + 1))
+    done <"$choices_file"
+
+    printf 'Select worktree: ' >&2
+    IFS= read -r selection || exit 1
+
+    case "$selection" in
+        ''|*[!0-9]*)
+            die "Invalid selection"
+            ;;
+    esac
+
+    awk -F "$tab" -v line_no="$selection" '
+        NR == line_no {
+            print $4
+            found = 1
+            exit
+        }
+        END {
+            exit found ? 0 : 1
+        }
+    ' "$choices_file" || die "Selection out of range"
+}
+
+pick_worktree() {
+    if command -v fzf >/dev/null 2>&1; then
+        pick_with_fzf
+        return
+    fi
+
+    pick_without_fzf
+}
+
+new_worktree() {
+    [ $# -eq 1 ] || usage
+    name=$1
+    target=$(managed_path "$name")
+
+    if [ -e "$target" ]; then
+        die "Path already exists: $target"
+    fi
+
+    mkdir -p "$(dirname "$target")"
+
+    if git show-ref --verify --quiet "refs/heads/$name"; then
+        git worktree add "$target" "$name" >/dev/null
+    else
+        git worktree add -b "$name" "$target" >/dev/null
+    fi
+
+    printf '%s\n' "$target"
+}
+
+remove_worktree() {
+    force_flag=
+    path_mode=0
+    target=
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --force|-f)
+                force_flag=1
+                ;;
+            --path)
+                path_mode=1
+                shift
+                [ $# -gt 0 ] || usage
+                target=$1
+                ;;
+            --help|-h)
+                usage
+                ;;
+            -*)
+                usage
+                ;;
+            *)
+                if [ -n "$target" ]; then
+                    usage
+                fi
+                target=$1
+                ;;
+        esac
+        shift
+    done
+
+    [ -n "$target" ] || usage
+
+    if [ "$path_mode" -eq 0 ]; then
+        target=$(managed_path "$target")
+    fi
+
+    if [ -n "$force_flag" ]; then
+        git worktree remove --force "$target"
+    else
+        git worktree remove "$target"
+    fi
+}
+
+main() {
+    [ $# -gt 0 ] || usage
+
+    command_name=$1
+    shift
+
+    case "$command_name" in
+        --help|-h|help)
+            usage 0
+            ;;
+        list)
+            ensure_repo
+            [ $# -eq 0 ] || usage
+            list_worktrees
+            ;;
+        new)
+            ensure_repo
+            new_worktree "$@"
+            ;;
+        pick)
+            ensure_repo
+            [ $# -eq 0 ] || usage
+            pick_worktree
+            ;;
+        main)
+            ensure_repo
+            [ $# -eq 0 ] || usage
+            main_path
+            ;;
+        rm)
+            ensure_repo
+            remove_worktree "$@"
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
+main "$@"

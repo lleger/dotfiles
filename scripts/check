@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+
+ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
+
+cd "$ROOT"
+
+sh -n install.sh
+sh -n bin/wt
+
+zsh -n \
+  config/zsh/.zshenv \
+  config/zsh/.zshrc \
+  config/zsh/aliases.zsh \
+  config/zsh/atuin.zsh \
+  config/zsh/env.zsh \
+  config/zsh/nav.zsh \
+  config/zsh/nushell.zsh \
+  config/zsh/patina.zsh \
+  config/zsh/worktree.zsh
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
+
+mkdir -p "$tmpdir/layouts"
+cp config/zellij/config.kdl "$tmpdir/config.kdl"
+cp -R config/zellij/layouts/. "$tmpdir/layouts/"
+
+ZELLIJ_CONFIG_DIR="$tmpdir" zellij setup --check >/dev/null

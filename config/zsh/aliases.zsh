@@ -13,4 +13,5 @@ alias pcat='command cat'
 
 if command -v zellij >/dev/null 2>&1; then
     alias zj='zellij attach -c'
+    alias za='zellij -l ai'
 fi
