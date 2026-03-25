@@ -10,6 +10,16 @@ copy_file() {
   cp "$ROOT/$src" "$dest"
 }
 
+backup_and_copy_file() {
+  src="$1"
+  dest="$2"
+  mkdir -p "$(dirname "$dest")"
+  if [ -f "$dest" ]; then
+    cp "$dest" "$dest.bak"
+  fi
+  cp "$ROOT/$src" "$dest"
+}
+
 copy_dir() {
   src="$1"
   dest="$2"
@@ -40,3 +50,7 @@ copy_dir "config/zellij" "$HOME/.config/zellij"
 copy_dir "config/zsh" "$HOME/.config/zsh"
 copy_dir "config/zsh-patina" "$HOME/.config/zsh-patina"
 copy_executable "bin/wt" "$HOME/.local/bin/wt"
+
+mkdir -p "$HOME/.claude"
+backup_and_copy_file "config/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+backup_and_copy_file "config/claude/settings.json" "$HOME/.claude/settings.json"
