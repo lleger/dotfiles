@@ -40,3 +40,7 @@ copy_dir "config/zellij" "$HOME/.config/zellij"
 copy_dir "config/zsh" "$HOME/.config/zsh"
 copy_dir "config/zsh-patina" "$HOME/.config/zsh-patina"
 copy_executable "bin/wt" "$HOME/.local/bin/wt"
+
+mkdir -p "$HOME/.claude"
+copy_file "config/claude/CLAUDE.md" "$HOME/.claude/CLAUDE.md"
+copy_file "config/claude/settings.json" "$HOME/.claude/settings.json"
