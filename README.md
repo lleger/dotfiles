@@ -58,6 +58,12 @@ Run the repo checks with:
 mise run check
 ```
 
+Run just the `wt` tests with:
+
+```sh
+mise run test
+```
+
 This validates:
 
 - `install.sh`
@@ -132,6 +138,9 @@ Managed worktrees are created relative to the current repo's parent directory:
 
 Existing worktrees created by other tools still show up in `wt list` and
 `wt pick`.
+
+Completion menus for `wt cd`, `wt path`, and `wt rm` also include the latest
+commit context for each branch.
 
 ## Neovim
 
