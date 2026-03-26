@@ -69,6 +69,8 @@ For issue-level comments, reply:
 gh api repos/{owner}/{repo}/issues/{pr_number}/comments -f body="<your reply>"
 ```
 
+IMPORTANT: Keep commands simple. Do NOT pipe through jq, redirect stderr, or append extra commands. Just the bare `gh api` call — the JSON response is sufficient. Piping or redirecting can break permission matching and cause unnecessary approval prompts.
+
 Reply guidelines:
 - If you fixed something: reference the commit SHA (e.g., "Good catch — fixed in abc1234.")
 - If pushing back: be respectful and give a clear reason
