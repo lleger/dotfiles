@@ -35,6 +35,19 @@ _wt_rm_target_path() {
     fi
 }
 
+_wt_cd_target_path() {
+    if [[ $# -eq 0 ]]; then
+        return 2
+    fi
+
+    if [[ -e "$1" ]]; then
+        printf '%s\n' "$1"
+        return 0
+    fi
+
+    command wt path "$1"
+}
+
 _wt_worktree_names() {
     git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
 
@@ -82,6 +95,7 @@ _wt() {
     local path_index
     subcommands=(
         "list:list worktrees"
+        "cd:cd into worktree"
         "new:create worktree"
         "pick:pick worktree"
         "main:show main worktree path"
@@ -144,6 +158,25 @@ _wt() {
             fi
             return
             ;;
+        cd)
+            local -a specs descriptions
+            specs=("${(@f)$(_wt_worktree_descriptions)}")
+            if (( ${#specs[@]} )); then
+                names=()
+                descriptions=()
+                local spec name desc
+                for spec in "${specs[@]}"; do
+                    name=${spec%%$'\t'*}
+                    desc=${spec#*$'\t'}
+                    names+=("$name")
+                    descriptions+=("$desc")
+                done
+                compadd -Q -S '' -d descriptions -- "${names[@]}"
+            else
+                _message "worktree"
+            fi
+            return
+            ;;
         new)
             _message "new worktree name"
             return
@@ -156,6 +189,11 @@ _wt() {
 
 wt() {
     case "${1-}" in
+        cd)
+            shift
+            target=$(_wt_cd_target_path "$@") || return 1
+            cd "$target" || return 1
+            ;;
         new)
             shift
             target=$(command wt new "$@") || return 1

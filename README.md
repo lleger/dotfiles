@@ -108,6 +108,7 @@ preview of recent commits.
 Current commands:
 
 - `wt list`
+- `wt cd <name>`
 - `wt new <name>`
 - `wt pick`
 - `wt main`
@@ -120,9 +121,9 @@ Interactive zsh wrappers:
 - `wn <name>` creates a worktree and `cd`s into it
 - `wm` jumps back to the main checkout
 
-In interactive zsh, `wt new <name>` also drops you into the new worktree, and
-`wt rm <name>` will hop back to the main checkout first if you remove the
-worktree you are currently inside.
+In interactive zsh, `wt cd <name>` jumps to an existing worktree, `wt new
+<name>` drops you into the new worktree, and `wt rm <name>` hops back to the
+main checkout first if you remove the worktree you are currently inside.
 
 Managed worktrees are created relative to the current repo's parent directory:
 
