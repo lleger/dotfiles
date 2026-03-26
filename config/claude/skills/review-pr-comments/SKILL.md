@@ -27,7 +27,11 @@ Also get issue-level comments:
 gh api repos/{owner}/{repo}/issues/{pr_number}/comments --paginate
 ```
 
-Address ALL unresolved comments that haven't been replied to by the PR author — regardless of who left them. This includes comments from humans, Copilot, Codex, and any other bot or AI reviewer. Do not skip or deprioritize comments based on their author. Only skip comments that are already resolved or that the PR author has already replied to.
+Address ALL unresolved comments — regardless of who left them. This includes comments from humans, Copilot, Codex, any other bot or AI reviewer, and **the PR author themselves**. The PR author may leave new comments on their own PR with suggestions, requests, or TODOs that need to be addressed. Do not skip or deprioritize comments based on their author.
+
+Only skip a comment if:
+- It is already resolved, OR
+- The PR author has already **replied** to it (i.e., there is a reply from the PR author in the thread — the original comment itself being from the PR author does NOT count as "already replied to")
 
 ## Step 3: Group comments by reviewer, then address them
 
