@@ -1,0 +1,137 @@
+#!/bin/sh
+set -eu
+
+ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
+WT="$ROOT/bin/wt"
+
+pass() {
+  printf 'ok - %s\n' "$1"
+}
+
+fail() {
+  printf 'not ok - %s\n' "$1" >&2
+  exit 1
+}
+
+assert_eq() {
+  expected=$1
+  actual=$2
+  message=$3
+
+  if [ "$expected" != "$actual" ]; then
+    printf 'expected: %s\nactual:   %s\n' "$expected" "$actual" >&2
+    fail "$message"
+  fi
+}
+
+assert_contains() {
+  haystack=$1
+  needle=$2
+  message=$3
+
+  case "$haystack" in
+    *"$needle"*)
+      ;;
+    *)
+      printf 'missing substring: %s\nin:\n%s\n' "$needle" "$haystack" >&2
+      fail "$message"
+      ;;
+  esac
+}
+
+setup_repo() {
+  temp_root=$(mktemp -d)
+  temp_root=$(cd "$temp_root" && pwd -P)
+  repo="$temp_root/demo"
+
+  mkdir -p "$repo"
+  (
+    cd "$repo"
+    git init -q
+    git config user.name test
+    git config user.email test@example.com
+    git config core.fsmonitor false
+    printf 'hello\n' > README.md
+    git add README.md
+    git commit --no-gpg-sign -q -m init
+  )
+}
+
+cleanup_repo() {
+  rm -rf "$temp_root"
+}
+
+test_new_creates_managed_worktree() {
+  setup_repo
+
+  output=$(
+    cd "$repo"
+    "$WT" new feature/demo
+  )
+
+  expected="$temp_root/wt/demo/feature/demo"
+  assert_eq "$expected" "$output" "wt new prints managed worktree path"
+  [ -d "$expected" ] || fail "wt new creates worktree directory"
+
+  pass "wt new creates managed worktree"
+  cleanup_repo
+}
+
+test_main_and_list_report_current_repo() {
+  setup_repo
+
+  (
+    cd "$repo"
+    "$WT" new feature/list >/dev/null
+    main_output=$("$WT" main)
+    list_output=$("$WT" list)
+
+    assert_eq "$repo" "$main_output" "wt main returns primary checkout"
+    assert_contains "$list_output" "* main [main]" "wt list marks the primary checkout"
+    assert_contains "$list_output" "feature/list" "wt list includes secondary worktrees"
+  )
+
+  pass "wt main and wt list report worktrees"
+  cleanup_repo
+}
+
+test_path_and_rm_support_external_worktrees() {
+  setup_repo
+
+  external="$temp_root/external-demo"
+
+  (
+    cd "$repo"
+    git worktree add -q -b ext/test "$external"
+
+    resolved=$("$WT" path ext/test)
+    assert_eq "$external" "$resolved" "wt path resolves external worktree by branch name"
+
+    "$WT" rm ext/test >/dev/null
+    [ ! -e "$external" ] || fail "wt rm removes external worktree by branch name"
+  )
+
+  pass "wt path and wt rm support external worktrees"
+  cleanup_repo
+}
+
+test_pick_returns_selected_worktree() {
+  setup_repo
+
+  (
+    cd "$repo"
+    "$WT" new feature/one >/dev/null
+    target=$("$WT" new feature/two)
+    picked=$(FZF_DEFAULT_OPTS='--filter=feature/two' "$WT" pick)
+
+    assert_eq "$target" "$picked" "wt pick returns the filtered worktree path"
+  )
+
+  pass "wt pick returns selected worktree"
+  cleanup_repo
+}
+
+test_new_creates_managed_worktree
+test_main_and_list_report_current_repo
+test_path_and_rm_support_external_worktrees
+test_pick_returns_selected_worktree

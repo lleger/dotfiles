@@ -1,3 +1,7 @@
 [tasks.check]
 description = "Validate shell scripts and managed terminal config"
 run = "./scripts/check"
+
+[tasks.test]
+description = "Run wt CLI tests"
+run = "sh ./scripts/test-wt"

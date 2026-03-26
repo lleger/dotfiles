@@ -7,6 +7,7 @@ cd "$ROOT"
 
 sh -n install.sh
 sh -n bin/wt
+sh -n scripts/test-wt
 
 zsh -n \
   config/zsh/.zshenv \
@@ -27,3 +28,5 @@ cp config/zellij/config.kdl "$tmpdir/config.kdl"
 cp -R config/zellij/layouts/. "$tmpdir/layouts/"
 
 ZELLIJ_CONFIG_DIR="$tmpdir" zellij setup --check >/dev/null
+
+sh ./scripts/test-wt

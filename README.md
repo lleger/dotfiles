@@ -17,6 +17,7 @@ Home-directory shims:
 XDG-managed config:
 
 - `~/.config/atuin/config.toml`
+- `~/.config/nvim`
 - `~/.config/psql/psqlrc`
 - `~/.config/zellij/config.kdl`
 - `~/.config/zsh/.zshenv`
@@ -57,6 +58,12 @@ Run the repo checks with:
 mise run check
 ```
 
+Run just the `wt` tests with:
+
+```sh
+mise run test
+```
+
 This validates:
 
 - `install.sh`
@@ -76,6 +83,13 @@ Then restart the shell:
 
 ```sh
 exec zsh
+```
+
+On a fresh machine, open Neovim once after install so LazyVim can install the
+managed plugins:
+
+```sh
+nvim
 ```
 
 ## Git
@@ -100,6 +114,7 @@ preview of recent commits.
 Current commands:
 
 - `wt list`
+- `wt cd <name>`
 - `wt new <name>`
 - `wt pick`
 - `wt main`
@@ -112,6 +127,10 @@ Interactive zsh wrappers:
 - `wn <name>` creates a worktree and `cd`s into it
 - `wm` jumps back to the main checkout
 
+In interactive zsh, `wt cd <name>` jumps to an existing worktree, `wt new
+<name>` drops you into the new worktree, and `wt rm <name>` hops back to the
+main checkout first if you remove the worktree you are currently inside.
+
 Managed worktrees are created relative to the current repo's parent directory:
 
 - `~/code/cli` -> `~/code/wt/cli/<branch>`
@@ -119,6 +138,36 @@ Managed worktrees are created relative to the current repo's parent directory:
 
 Existing worktrees created by other tools still show up in `wt list` and
 `wt pick`.
+
+Completion menus for `wt cd`, `wt path`, and `wt rm` also include the latest
+commit context for each branch.
+
+## Neovim
+
+The managed Neovim config is the official LazyVim starter layout under
+`~/.config/nvim`.
+
+This means:
+
+- LazyVim provides the core editing experience and plugin defaults
+- `lazy.nvim` is still the underlying plugin manager
+- the repo keeps a committed `lazy-lock.json` for plugin version stability
+
+This first pass is intentionally close to the starter:
+
+- no custom plugin overrides yet
+- no extra language packs yet
+- no local tweaks beyond the starter structure
+
+After the first install, a useful sanity check is:
+
+```vim
+:LazyHealth
+```
+
+Source:
+- https://www.lazyvim.org/
+- https://www.lazyvim.org/installation
 
 ## Zellij
 
