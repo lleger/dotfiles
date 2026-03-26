@@ -30,6 +30,8 @@ tab_char() {
 }
 
 git_common_dir() {
+    # Resolve through linked worktrees so repo-level decisions use the shared
+    # Git directory rather than the per-worktree .git file.
     common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null || git rev-parse --git-common-dir) || exit 1
 
     case "$common_dir" in
@@ -47,6 +49,8 @@ repo_root() {
 }
 
 repo_name() {
+    # The shared Git dir lives at <repo>/.git, so its parent directory name is
+    # the logical repo name we use for managed worktree paths.
     common_dir=$(git_common_dir)
     basename "$(dirname "$common_dir")"
 }
@@ -70,6 +74,8 @@ branch_path_for_name() {
     name=$1
     tab=$(tab_char)
 
+    # Prefer any existing worktree already attached to this branch, even if it
+    # was created outside our managed wt/ directory convention.
     if output=$(
         worktree_records | awk -F "$tab" -v name="$name" '
             $2 != "main" && $3 == name {
@@ -109,6 +115,8 @@ branch_path_for_name() {
 path_for_name() {
     [ $# -eq 1 ] || return 1
 
+    # Mixed-origin support: existing branch worktrees win, otherwise fall back
+    # to the managed location we would create for this name.
     if branch_path=$(branch_path_for_name "$1"); then
         printf '%s\n' "$branch_path"
         return 0
@@ -120,6 +128,8 @@ path_for_name() {
 worktree_records() {
     current_root=$(repo_root)
     tab=$(tab_char)
+    # Parse once into a stable tab-delimited format the rest of the script can
+    # reuse. The second field marks the primary checkout with "main".
     git worktree list --porcelain | awk -v current_root="$current_root" -v tab="$tab" '
         function flush_record() {
             if (path == "") {
@@ -243,6 +253,8 @@ pick_without_fzf() {
 }
 
 pick_worktree() {
+    # Prefer fzf when available, but keep a plain-text fallback so the command
+    # still works on machines without the fuzzy finder installed.
     if command -v fzf >/dev/null 2>&1; then
         pick_with_fzf
         return
@@ -262,6 +274,8 @@ new_worktree() {
 
     mkdir -p "$(dirname "$target")"
 
+    # Reuse an existing local branch when present; otherwise create it from the
+    # current HEAD as part of `git worktree add`.
     if git show-ref --verify --quiet "refs/heads/$name"; then
         git worktree add "$target" "$name" >/dev/null
     else
@@ -306,6 +320,8 @@ remove_worktree() {
     [ -n "$target" ] || usage
 
     if [ "$path_mode" -eq 0 ]; then
+        # Name-based removal supports both managed worktrees and arbitrary
+        # existing branch worktrees via path_for_name.
         target=$(path_for_name "$target")
     fi
 
