@@ -14,6 +14,7 @@ Usage:
   wt new <name>
   wt pick
   wt main
+  wt path <name>
   wt rm [--force] <name>
   wt rm [--force] --path <path>
 EOF
@@ -62,6 +63,58 @@ managed_root() {
 managed_path() {
     [ $# -eq 1 ] || return 1
     printf '%s/%s\n' "$(managed_root)" "$1"
+}
+
+branch_path_for_name() {
+    [ $# -eq 1 ] || return 1
+    name=$1
+    tab=$(tab_char)
+
+    if output=$(
+        worktree_records | awk -F "$tab" -v name="$name" '
+            $2 != "main" && $3 == name {
+                count++
+                path = $4
+            }
+            END {
+                if (count == 1) {
+                    print path
+                    exit 0
+                }
+                if (count > 1) {
+                    exit 2
+                }
+                exit 1
+            }
+        '
+    ); then
+        printf '%s\n' "$output"
+        return 0
+    fi
+
+    status=$?
+    case "$status" in
+        1)
+            return 1
+            ;;
+        2)
+            die "Multiple worktrees match branch: $name"
+            ;;
+        *)
+            return "$status"
+            ;;
+    esac
+}
+
+path_for_name() {
+    [ $# -eq 1 ] || return 1
+
+    if branch_path=$(branch_path_for_name "$1"); then
+        printf '%s\n' "$branch_path"
+        return 0
+    fi
+
+    managed_path "$1"
 }
 
 worktree_records() {
@@ -253,7 +306,7 @@ remove_worktree() {
     [ -n "$target" ] || usage
 
     if [ "$path_mode" -eq 0 ]; then
-        target=$(managed_path "$target")
+        target=$(path_for_name "$target")
     fi
 
     if [ -n "$force_flag" ]; then
@@ -291,6 +344,10 @@ main() {
             ensure_repo
             [ $# -eq 0 ] || usage
             main_path
+            ;;
+        path)
+            ensure_repo
+            path_for_name "$@"
             ;;
         rm)
             ensure_repo

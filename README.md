@@ -120,6 +120,10 @@ Interactive zsh wrappers:
 - `wn <name>` creates a worktree and `cd`s into it
 - `wm` jumps back to the main checkout
 
+In interactive zsh, `wt new <name>` also drops you into the new worktree, and
+`wt rm <name>` will hop back to the main checkout first if you remove the
+worktree you are currently inside.
+
 Managed worktrees are created relative to the current repo's parent directory:
 
 - `~/code/cli` -> `~/code/wt/cli/<branch>`
