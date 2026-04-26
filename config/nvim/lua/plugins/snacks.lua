@@ -8,6 +8,10 @@ return {
             hidden = true,
             include = { ".env" },
           },
+          grep = {
+            hidden = true,
+            no_ignore = true,
+          },
         },
       },
     },
