@@ -61,7 +61,7 @@ For example: `fix(auth): add nil check for session token per review` or `fix(api
 
 ## Step 5: Reply to each comment individually
 
-Reply to each comment ONE AT A TIME using individual `gh api` calls. Do NOT batch replies into a single script or review submission.
+Reply to each comment ONE AT A TIME. Each reply MUST be its own separate Bash tool call containing a single `gh api` command — no shell loops, no scripts, no batching multiple replies into one command. Why: individual `gh api` calls are auto-approved, but a script wrapping multiple calls is not. Batching defeats unattended operation.
 
 For review comments (comments on specific lines of code), reply to each one:
 ```
