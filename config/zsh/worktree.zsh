@@ -238,6 +238,31 @@ wm() {
     cd "$target" || return 1
 }
 
+ws() {
+    [ $# -eq 1 ] || {
+        printf 'usage: ws <name>\n' >&2
+        return 2
+    }
+
+    target=$(_wt_cd_target_path "$1") || return 1
+    cd "$target" || return 1
+}
+
+_ws() {
+    local -a names descriptions specs
+    specs=("${(@f)$(_wt_worktree_descriptions)}")
+    if (( ${#specs[@]} )); then
+        for spec in "${specs[@]}"; do
+            names+=("${spec%%$'\t'*}")
+            descriptions+=("${spec#*$'\t'}")
+        done
+        compadd -Q -S '' -d descriptions -- "${names[@]}"
+    else
+        _message "worktree"
+    fi
+}
+
 if typeset -f compdef >/dev/null 2>&1; then
     compdef _wt wt
+    compdef _ws ws
 fi
