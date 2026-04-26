@@ -27,6 +27,10 @@ mkdir -p "${HISTFILE:h}"
 # Load worktree helpers and navigation wrappers.
 [[ -f "$ZDOTDIR/worktree.zsh" ]] && source "$ZDOTDIR/worktree.zsh"
 
+# Load Television fuzzy-finder integration (Ctrl-T smart autocomplete).
+# Sourced before Atuin so Atuin's Ctrl-R binding wins.
+[[ -f "$ZDOTDIR/television.zsh" ]] && source "$ZDOTDIR/television.zsh"
+
 # Load Atuin history integration before prompt-highlighting plugins.
 [[ -f "$ZDOTDIR/atuin.zsh" ]] && source "$ZDOTDIR/atuin.zsh"
 
