@@ -5,6 +5,9 @@ default_shell "/bin/zsh"
 // Use Zellij's built-in Tokyo Night theme.
 theme "tokyo-night"
 
+// Start in locked mode so keybindings don't collide with terminal apps.
+default_mode "locked"
+
 // Skip introductory UI noise once the basics are known.
 show_startup_tips false
 show_release_notes false
@@ -20,5 +23,31 @@ keybinds {
     unbind "Alt f"
     shared_except "locked" {
         bind "Alt Shift f" { ToggleFloatingPanes; }
+    }
+
+    // Bindings that work in locked mode so we don't have to unlock for common tasks.
+    locked {
+        bind "Alt p" { NewPane; }
+        bind "Alt t" { NewTab; }
+        bind "Alt h" { MoveFocusOrTab "Left"; }
+        bind "Alt l" { MoveFocusOrTab "Right"; }
+        bind "Alt j" { MoveFocus "Down"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt 1" { GoToTab 1; }
+        bind "Alt 2" { GoToTab 2; }
+        bind "Alt 3" { GoToTab 3; }
+        bind "Alt 4" { GoToTab 4; }
+        bind "Alt 5" { GoToTab 5; }
+        bind "Alt Shift f" { ToggleFloatingPanes; }
+        bind "Alt r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        bind "Alt x" { CloseFocus; }
+    }
+
+    renametab {
+        bind "Enter" "Esc" { SwitchToMode "Locked"; }
+    }
+
+    renamepane {
+        bind "Enter" "Esc" { SwitchToMode "Locked"; }
     }
 }
