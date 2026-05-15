@@ -21,9 +21,6 @@ mkdir -p "${HISTFILE:h}"
 # Load small directory-jump helpers.
 [[ -f "$ZDOTDIR/nav.zsh" ]] && source "$ZDOTDIR/nav.zsh"
 
-# Load Nushell helpers.
-[[ -f "$ZDOTDIR/nushell.zsh" ]] && source "$ZDOTDIR/nushell.zsh"
-
 # Load worktree helpers and navigation wrappers.
 [[ -f "$ZDOTDIR/worktree.zsh" ]] && source "$ZDOTDIR/worktree.zsh"
 
@@ -36,3 +33,6 @@ mkdir -p "${HISTFILE:h}"
 
 # Keep syntax highlighting activation isolated and last in startup order.
 [[ -f "$ZDOTDIR/patina.zsh" ]] && source "$ZDOTDIR/patina.zsh"
+
+# Load machine-specific shell customizations when present.
+[[ -f "$ZDOTDIR/local.zsh" ]] && source "$ZDOTDIR/local.zsh"

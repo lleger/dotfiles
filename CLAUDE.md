@@ -12,5 +12,5 @@ When adding a new file or directory that should ship with the dotfiles, add a `c
 
 `./scripts/check-drift` reports differences between the repo and the deployed tree. Some drift is expected and should not be backported:
 
-- `config/zsh/.zshrc` — Hiive CLI re-injects a `hiive initialize` block on every interactive shell.
+- `config/zsh/.zshrc` — machine-local tooling may re-inject local init blocks in deployed shells.
 - `config/nvim/{lazyvim.json,.claude}` — LazyVim runtime files.

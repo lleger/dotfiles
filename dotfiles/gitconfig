@@ -1,6 +1,6 @@
 [user]
 	name = Logan Leger
-	email = logan@hiive.com
+	email = logan@loganleger.com
 	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF9ZKwLYzM7gs0CasiGxWAtJwma/MsVxoUoJ8kBGQv8Y
 [credential "https://github.com"]
 	helper =
@@ -77,3 +77,6 @@
 # Personal projects
 [includeIf "gitdir:~/code/"]
 	path = ~/code/.gitconfig
+
+[include]
+	path = ~/.gitconfig.local

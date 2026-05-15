@@ -1,8 +1,8 @@
 # Dotfiles
 
-This repo is the current baseline for my local shell and terminal environment.
-It is intentionally small and centered around an XDG-style Zsh layout, Neovim,
-Zellij, Atuin, and zsh-patina.
+This repo is the current baseline for my local shell, terminal, editor, and
+agent tooling. It is intentionally centered around an XDG-style Zsh layout,
+Neovim, Zellij, Atuin, Television, Mise, OpenCode, and zsh-patina.
 
 ## Layout
 
@@ -17,8 +17,11 @@ Home-directory shims:
 XDG-managed config:
 
 - `~/.config/atuin/config.toml`
+- `~/.config/mise/config.toml`
 - `~/.config/nvim`
+- `~/.config/opencode/opencode.json`
 - `~/.config/psql/psqlrc`
+- `~/.config/television/config.toml`
 - `~/.config/zellij/config.kdl`
 - `~/.config/zsh/.zshenv`
 - `~/.config/zsh/.zshrc`
@@ -27,20 +30,28 @@ XDG-managed config:
 
 ## Brew Bundle
 
-The `Brewfile` contains the core CLI tools this setup expects:
+The `Brewfile` contains the apps and CLI tools this setup expects, including:
 
+- `1password`, `1password-cli`
+- `ghostty`
+- `postgres-app`
+- `zed`
+- `awscli`
 - `atuin`
 - `bat`
+- `docker`
 - `eza`
 - `fzf`
 - `gh`
 - `git`
+- `git-delta`
 - `jq`
+- `lazygit`
 - `mise`
 - `neovim`
-- `nushell`
+- `opencode`
 - `ripgrep`
-- `trash`
+- `television`
 - `zellij`
 - `zsh-patina`
 
@@ -69,9 +80,44 @@ This validates:
 - `install.sh`
 - `bin/wt`
 - the managed zsh files
-- the managed Zellij config and layouts
+- the managed Zellij config
 
-## Install
+## Fresh Laptop
+
+Install Homebrew first, then from this repo run:
+
+```sh
+brew bundle
+./install.sh
+exec zsh
+```
+
+After installing, finish the auth and app-specific setup that cannot be safely
+stored in this repo:
+
+- Sign in to 1Password and enable SSH agent/signing.
+- Create or restore `~/.ssh/allowed_signers` for Git SSH signing.
+- Run `gh auth login`.
+- Run `atuin login` and `atuin sync` if restoring shell history.
+- Sign in to Claude Code and OpenCode as needed.
+- Add machine-specific shell config to `~/.config/zsh/local.zsh`.
+- Add machine-specific Git config to `~/.gitconfig.local`.
+
+Then validate the install:
+
+```sh
+mise run check
+./scripts/check-drift
+```
+
+On a fresh machine, open Neovim once after install so LazyVim can install the
+managed plugins:
+
+```sh
+nvim
+```
+
+## Install Only
 
 Apply the managed files with:
 
@@ -83,13 +129,6 @@ Then restart the shell:
 
 ```sh
 exec zsh
-```
-
-On a fresh machine, open Neovim once after install so LazyVim can install the
-managed plugins:
-
-```sh
-nvim
 ```
 
 ## Git
@@ -134,7 +173,7 @@ main checkout first if you remove the worktree you are currently inside.
 Managed worktrees are created relative to the current repo's parent directory:
 
 - `~/code/cli` -> `~/code/wt/cli/<branch>`
-- `~/hiive/server` -> `~/hiive/wt/server/<branch>`
+- `~/work/server` -> `~/work/wt/server/<branch>`
 
 Existing worktrees created by other tools still show up in `wt list` and
 `wt pick`.
@@ -178,12 +217,17 @@ The default Zellij config includes:
 - session serialization
 - Neovim as the scrollback editor
 
-The managed layout [ai.kdl](/Users/logan/code/dotfiles/config/zellij/layouts/ai.kdl) gives you one large main pane plus a right-side `lazygit` pane.
-
 Useful shell aliases:
 
 - `zj` attaches or creates a Zellij session
-- `za` launches Zellij with the `ai` layout
+
+## Agent Tools
+
+Claude Code config is managed under `~/.claude`, but machine-specific skills,
+plugins, MCP servers, and telemetry hooks are intentionally not included.
+
+OpenCode config is managed under `~/.config/opencode/opencode.json`. The repo
+keeps this generic: no machine-specific MCP servers and no local telemetry plugin.
 
 ## Notes
 
@@ -191,6 +235,10 @@ Useful shell aliases:
   shell config lives under `~/.config/zsh`.
 - `PSQLRC` is set to `~/.config/psql/psqlrc`, while `~/.psqlrc` remains as a
   compatibility shim.
+- `~/.config/zsh/local.zsh` is sourced when present and is the right place for
+  local machine-specific shell setup.
+- `~/.gitconfig.local` is included when present and is the right place for
+  local Git overrides.
 - The shell config assumes some optional tools may be absent and guards those
   integrations accordingly.
 - Some machine-specific integrations are intentionally not managed here.

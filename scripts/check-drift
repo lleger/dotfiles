@@ -4,9 +4,10 @@
 # sync if install.sh changes.
 #
 # Expected drift (do not "fix"):
-#   - config/zsh/.zshrc: deployed has a hiive init block re-injected on every
-#     interactive shell by the Hiive CLI.
+#   - config/zsh/.zshrc: deployed may have local init blocks re-injected by
+#     machine-local tooling.
 #   - config/nvim: lazyvim.json and similar runtime files exist only in deployed.
+#   - config/zsh: completion dumps, logs, and local.zsh may exist only in deployed.
 set -eu
 
 ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
@@ -23,11 +24,12 @@ check_file() {
 
 check_dir() {
     src="$1"; dest="$2"
+    shift 2
     if [ ! -d "$dest" ]; then
         printf 'MISSING  %s\n' "$dest"
         return
     fi
-    diff -r --brief "$src" "$dest" 2>&1 | sed 's/^/  /'
+    diff -r --brief "$@" "$src" "$dest" 2>&1 | sed 's/^/  /'
 }
 
 echo "== files =="
@@ -44,9 +46,12 @@ echo
 echo "== directories =="
 for pair in \
     "config/atuin:$HOME/.config/atuin" \
+    "config/mise:$HOME/.config/mise" \
+    "config/opencode:$HOME/.config/opencode" \
     "config/ghostty:$HOME/.config/ghostty" \
     "config/nvim:$HOME/.config/nvim" \
     "config/psql:$HOME/.config/psql" \
+    "config/television:$HOME/.config/television" \
     "config/zellij:$HOME/.config/zellij" \
     "config/zsh:$HOME/.config/zsh" \
     "config/zsh-patina:$HOME/.config/zsh-patina" \
@@ -55,5 +60,18 @@ do
     src="${pair%%:*}"
     dest="${pair#*:}"
     echo "-- $src --"
-    check_dir "$src" "$dest"
+    case "$src" in
+        config/nvim)
+            check_dir "$src" "$dest" -x .claude -x lazyvim.json
+            ;;
+        config/television)
+            check_dir "$src" "$dest" -x cable
+            ;;
+        config/zsh)
+            check_dir "$src" "$dest" -x .nvimlog -x .zcompdump -x local.zsh
+            ;;
+        *)
+            check_dir "$src" "$dest"
+            ;;
+    esac
 done
