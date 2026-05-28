@@ -34,5 +34,8 @@ mkdir -p "${HISTFILE:h}"
 # Keep syntax highlighting activation isolated and last in startup order.
 [[ -f "$ZDOTDIR/patina.zsh" ]] && source "$ZDOTDIR/patina.zsh"
 
+# Load the interactive prompt before machine-local overrides.
+[[ -f "$ZDOTDIR/prompt.zsh" ]] && source "$ZDOTDIR/prompt.zsh"
+
 # Load machine-specific shell customizations when present.
 [[ -f "$ZDOTDIR/local.zsh" ]] && source "$ZDOTDIR/local.zsh"
