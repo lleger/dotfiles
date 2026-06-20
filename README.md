@@ -28,9 +28,9 @@ XDG-managed config:
 - `~/.config/zsh/*.zsh`
 - `~/.config/zsh-patina/config.toml`
 
-## Brew Bundle
+## Bootstrap Packages
 
-The `Brewfile` contains the apps and CLI tools this setup expects, including:
+`mise.toml` contains the apps and CLI tools this setup expects, including:
 
 - `1password`, `1password-cli`
 - `ghostty`
@@ -55,10 +55,10 @@ The `Brewfile` contains the apps and CLI tools this setup expects, including:
 - `zellij`
 - `zsh-patina`
 
-Install them with:
+Install them with the full bootstrap:
 
 ```sh
-brew bundle
+mise bootstrap --yes
 ```
 
 ## Validation
@@ -77,18 +77,18 @@ mise run test
 
 This validates:
 
-- `install.sh`
+- `mise.toml`
 - `bin/wt`
 - the managed zsh files
 - the managed Zellij config
 
 ## Fresh Laptop
 
-Install Homebrew first, then from this repo run:
+Install Homebrew and Mise first, then from this repo run:
 
 ```sh
-brew bundle
-./install.sh
+brew install mise
+mise bootstrap --yes
 exec zsh
 ```
 
@@ -122,7 +122,7 @@ nvim
 Apply the managed files with:
 
 ```sh
-./install.sh
+mise dotfiles apply --yes
 ```
 
 Then restart the shell:

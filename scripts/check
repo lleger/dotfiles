@@ -5,7 +5,7 @@ ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
 
 cd "$ROOT"
 
-sh -n install.sh
+mise config >/dev/null
 sh -n bin/wt
 sh -n scripts/test-wt
 

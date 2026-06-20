@@ -1,3 +1,72 @@
+min_version = "2026.6.11"
+
+[settings]
+experimental = true
+
+[settings.dotfiles]
+root = "."
+default_mode = "copy"
+
+[bootstrap.brew.taps]
+"michel-kraemer/zsh-patina" = ""
+
+[bootstrap.packages]
+"brew:awscli" = "latest"
+"brew:atuin" = "latest"
+"brew:bash" = "latest"
+"brew:bat" = "latest"
+"brew:cloudflared" = "latest"
+"brew:coreutils" = "latest"
+"brew:doggo" = "latest"
+"brew:docker" = "latest"
+"brew:eza" = "latest"
+"brew:fd" = "latest"
+"brew:fzf" = "latest"
+"brew:gh" = "latest"
+"brew:git" = "latest"
+"brew:git-delta" = "latest"
+"brew:gnupg" = "latest"
+"brew:jq" = "latest"
+"brew:k9s" = "latest"
+"brew:kubernetes-cli" = "latest"
+"brew:lazygit" = "latest"
+"brew:mise" = "latest"
+"brew:neovim" = "latest"
+"brew:opencode" = "latest"
+"brew:openapi-generator" = "latest"
+"brew:ripgrep" = "latest"
+"brew:snowflake-cli" = "latest"
+"brew:tbls" = "latest"
+"brew:television" = "latest"
+"brew:tree-sitter-cli" = "latest"
+"brew:watchman" = "latest"
+"brew:xh" = "latest"
+"brew:yarn" = "latest"
+"brew:zellij" = "latest"
+"brew:zsh" = "latest"
+"brew:zsh-patina" = "latest"
+
+[dotfiles]
+"~/.gitconfig" = "dotfiles/gitconfig"
+"~/.gitignore" = "dotfiles/gitignore"
+"~/.hushlogin" = "dotfiles/hushlogin"
+"~/.psqlrc" = "dotfiles/psqlrc"
+"~/.zshenv" = "dotfiles/zshenv"
+"~/.local/bin/wt" = "bin/wt"
+"~/.config/atuin" = "config/atuin"
+"~/.config/mise" = "config/mise"
+"~/.config/opencode" = "config/opencode"
+"~/.config/ghostty" = "config/ghostty"
+"~/.config/nvim" = "config/nvim"
+"~/.config/psql" = "config/psql"
+"~/.config/television" = "config/television"
+"~/.config/zellij" = "config/zellij"
+"~/.config/zsh" = "config/zsh"
+"~/.config/zsh-patina" = "config/zsh-patina"
+"~/.claude/CLAUDE.md" = "config/claude/CLAUDE.md"
+"~/.claude/settings.json" = "config/claude/settings.json"
+"~/.claude/skills" = "config/claude/skills"
+
 [tasks.check]
 description = "Validate shell scripts and managed terminal config"
 run = "./scripts/check"
@@ -5,3 +74,14 @@ run = "./scripts/check"
 [tasks.test]
 description = "Run wt CLI tests"
 run = "sh ./scripts/test-wt"
+
+[tasks.bootstrap]
+description = "Finish idempotent dotfiles bootstrap setup"
+run = """
+mkdir -p "$HOME/.local/bin" "$HOME/.local/state/psql"
+chmod 755 "$HOME/.local/bin/wt"
+for cask in 1password 1password-cli ghostty postgres-app zed; do
+  brew list --cask "$cask" >/dev/null 2>&1 || brew install --cask "$cask"
+done
+mise install
+"""
