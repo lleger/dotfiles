@@ -8,8 +8,6 @@ Neovim, Zellij, Atuin, Television, Mise, OpenCode, and zsh-patina.
 
 Home-directory shims:
 
-- `~/.gitconfig`
-- `~/.gitignore`
 - `~/.hushlogin`
 - `~/.psqlrc`
 - `~/.zshenv`
@@ -17,6 +15,8 @@ Home-directory shims:
 XDG-managed config:
 
 - `~/.config/atuin/config.toml`
+- `~/.config/git/config`
+- `~/.config/git/ignore`
 - `~/.config/mise/config.toml`
 - `~/.config/nvim`
 - `~/.config/opencode/opencode.json`
@@ -96,12 +96,12 @@ After installing, finish the auth and app-specific setup that cannot be safely
 stored in this repo:
 
 - Sign in to 1Password and enable SSH agent/signing.
-- Create or restore `~/.ssh/allowed_signers` for Git SSH signing.
+- Create or restore `~/.config/git/allowed_signers` for Git SSH signing.
 - Run `gh auth login`.
 - Run `atuin login` and `atuin sync` if restoring shell history.
 - Sign in to Claude Code and OpenCode as needed.
 - Add machine-specific shell config to `~/.config/zsh/local.zsh`.
-- Add machine-specific Git config to `~/.gitconfig.local`.
+- Add machine-specific Git config to `~/.config/git/config.local`.
 
 Then validate the install:
 
@@ -237,10 +237,10 @@ keeps this generic: no machine-specific MCP servers and no local telemetry plugi
   compatibility shim.
 - `~/.config/zsh/local.zsh` is sourced when present and is the right place for
   local machine-specific shell setup.
-- `~/.gitconfig.local` is included when present and is the right place for
+- `~/.config/git/config.local` is included when present and is the right place for
   local Git overrides.
 - The shell config assumes some optional tools may be absent and guards those
   integrations accordingly.
 - Some machine-specific integrations are intentionally not managed here.
-- Review `dotfiles/gitconfig` before applying it on a different machine or
+- Review `config/git/config` before applying it on a different machine or
   account, because it includes signing and credential configuration.

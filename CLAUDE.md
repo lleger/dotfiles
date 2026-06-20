@@ -4,7 +4,7 @@ This repo deploys via `mise dotfiles apply` / `mise bootstrap` in copy mode, **n
 
 ## Editing workflow
 
-After changing any tracked managed file, run `mise dotfiles apply --yes` to land it in the live tree (`~/.config/...`, `~/.gitconfig`, etc.). Without that step, your edit is invisible to the running shell, nvim, ghostty, etc. — they read the deployed copy, not the repo.
+After changing any tracked managed file, run `mise dotfiles apply --yes` to land it in the live tree (`~/.config/...`, etc.). Without that step, your edit is invisible to the running shell, nvim, ghostty, etc. — they read the deployed copy, not the repo.
 
 When adding a new file or directory that should ship with the dotfiles, add a `[dotfiles]` entry to `mise.toml` too — otherwise it stays in the repo only.
 

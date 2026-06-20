@@ -47,13 +47,12 @@ default_mode = "copy"
 "brew:zsh-patina" = "latest"
 
 [dotfiles]
-"~/.gitconfig" = "dotfiles/gitconfig"
-"~/.gitignore" = "dotfiles/gitignore"
 "~/.hushlogin" = "dotfiles/hushlogin"
 "~/.psqlrc" = "dotfiles/psqlrc"
 "~/.zshenv" = "dotfiles/zshenv"
 "~/.local/bin/wt" = "bin/wt"
 "~/.config/atuin" = "config/atuin"
+"~/.config/git" = "config/git"
 "~/.config/mise" = "config/mise"
 "~/.config/opencode" = "config/opencode"
 "~/.config/ghostty" = "config/ghostty"
@@ -80,6 +79,7 @@ description = "Finish idempotent dotfiles bootstrap setup"
 run = """
 mkdir -p "$HOME/.local/bin" "$HOME/.local/state/psql"
 chmod 755 "$HOME/.local/bin/wt"
+rm -f "$HOME/.gitconfig" "$HOME/.gitignore"
 for cask in 1password 1password-cli ghostty postgres-app zed; do
   brew list --cask "$cask" >/dev/null 2>&1 || brew install --cask "$cask"
 done
